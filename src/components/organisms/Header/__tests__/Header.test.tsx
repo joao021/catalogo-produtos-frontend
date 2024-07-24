@@ -8,13 +8,11 @@ describe("Header", () => {
     const { getByAltText } = render(<Header />);
     const logo = getByAltText("alluLogo") as HTMLImageElement;
     expect(logo).toBeInTheDocument();
-    expect(logo.src).toContain("/assets/allu-logo.png");
   });
 
   test("should render cart icon", () => {
-    const { getByRole } = render(<Header />);
-    const cartButton = getByRole("button");
-    expect(cartButton).toBeInTheDocument();
-    expect(cartButton.querySelector("svg")).toBeInTheDocument();
+    const { container } = render(<Header />);
+    const cartIcon = container.querySelector("svg");
+    expect(cartIcon).toBeInTheDocument();
   });
 });

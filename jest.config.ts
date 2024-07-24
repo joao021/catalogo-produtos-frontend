@@ -27,6 +27,7 @@ const config: Config = {
   moduleDirectories: ["node_modules", "src"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^next/image$": "<rootDir>/__mocks__/next/image.js",
   },
   modulePathIgnorePatterns: ["<rootDir>/src/app/api/auth/"],
   preset: "ts-jest",

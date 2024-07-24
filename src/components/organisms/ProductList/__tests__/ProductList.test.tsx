@@ -7,9 +7,7 @@ import { Product } from "../../../../types/types";
 
 jest.mock("../../../../utils/fetchProducts");
 
-const mockFetchProducts = fetchProducts as jest.MockedFunction<
-  typeof fetchProducts
->;
+const mockFetchProducts = fetchProducts as jest.MockedFunction<typeof fetchProducts>;
 
 describe("ProductList", () => {
   test("should render the title correctly", () => {
