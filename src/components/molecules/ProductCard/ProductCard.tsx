@@ -8,19 +8,23 @@ import {
 } from "./ProductCard.styles";
 import { Product } from "../../../types/types";
 import { calculateInstallments } from "../../../utils/priceUtils";
-
+import Image from "next/image";
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { installment12Months } = calculateInstallments(
-    product.price12Months,
-  );
+  const { installment12Months } = calculateInstallments(product.price12Months);
 
   return (
     <Card>
-      <img src={product.imageUrlFront} alt={product.name} />
+      <Image
+        src={product.imageUrlFront}
+        alt={product.name}
+        width={500}
+        height={500}
+        layout="responsive"
+      />
       <TextContainer>
         <Title>{product.name}</Title>
         <Description>{product.description}</Description>

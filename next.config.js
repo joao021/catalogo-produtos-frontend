@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: [
+      "www.allugator.com",
+      "yacare-products-image.s3.sa-east-1.amazonaws.com",
+    ],
+  },
   reactStrictMode: true,
   async rewrites() {
     return [
@@ -16,8 +22,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/products',
+        source: "/",
+        destination: "/products",
         permanent: true,
       },
     ];
