@@ -1,15 +1,15 @@
-const nextJest = require("next/jest");
+import type { Config } from "jest";
+import nextJest from "next/jest";
 
 const createJestConfig = nextJest({
   dir: "./",
 });
 
-const customJestConfig = {
+const config: Config = {
   clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: ["src/**/*.(js|ts)(x)?", "!**/node_modules/**"],
   coverageDirectory: "coverage",
-  coveragePathIgnorePatterns: ["<rootDir>/src/stories/"],
   coverageReporters: ["html", "text", "text-summary", "cobertura", "lcov"],
   coverageThreshold: {
     global: {
@@ -41,4 +41,4 @@ const customJestConfig = {
   verbose: true,
 };
 
-module.exports = createJestConfig(customJestConfig);
+export default createJestConfig(config);
