@@ -1,6 +1,5 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { useRouter } from "next/router";
 import api from "../../../utils/api";
 import MockAdapter from "axios-mock-adapter";

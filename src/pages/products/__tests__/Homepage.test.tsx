@@ -1,7 +1,6 @@
 import { render } from "@testing-library/react";
 import { useRouter } from "next/router";
 import React from "react";
-import "@testing-library/jest-dom";
 import HomePage from "../index";
 
 jest.mock("../../../components/organisms/ProductList/ProductList", () => () => (

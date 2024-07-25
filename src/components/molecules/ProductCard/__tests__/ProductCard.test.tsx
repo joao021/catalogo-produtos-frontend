@@ -1,10 +1,9 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { useRouter } from "next/router";
-import { Product } from "../../../../types/types";
 import ProductCard from "../ProductCard";
 import { calculateInstallments } from "../../../../utils/priceUtils";
+import { Product } from "../../../../types";
 
 jest.mock("next/router", () => ({
   useRouter: jest.fn(),
