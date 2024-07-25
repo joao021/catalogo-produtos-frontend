@@ -12,7 +12,7 @@ import {
   PriceOption,
   ContentWrap,
   ShowMoreButton,
-} from "./ProductPage.styles";
+} from "../../styles/ProductPage.styles";
 import { useState, useEffect } from "react";
 import { useCart } from "../../context/CartContext";
 import useMemoryCache from "../../hooks/UserMemoryCache";
