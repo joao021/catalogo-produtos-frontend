@@ -1,14 +1,9 @@
 import React from "react";
-import {
-  Card,
-  Title,
-  Description,
-  Price,
-  TextContainer,
-} from "./ProductCard.styles";
+import { useRouter } from "next/router";
 import { Product } from "../../../types/types";
+import { Card, Image, Title, Price, Description } from "./ProductCard.styles";
 import { calculateInstallments } from "../../../utils/priceUtils";
-import Image from "next/image";
+
 interface ProductCardProps {
   product: Product;
 }
@@ -16,20 +11,19 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { installment12Months } = calculateInstallments(product.price12Months);
 
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/products/${product.id}`);
+  };
+
   return (
-    <Card>
-      <Image
-        src={product.imageUrlFront}
-        alt={product.name}
-        width={500}
-        height={500}
-        layout="responsive"
-      />
-      <TextContainer>
-        <Title>{product.name}</Title>
-        <Description>{product.description}</Description>
-        <Price>a partir de 12x R$ {installment12Months}</Price>
-      </TextContainer>
+    <Card onClick={handleClick}>
+      <Image src={product.imageUrlFront} alt={product.name} />
+      <Description>{product.description}</Description>
+
+      <Title>{product.name}</Title>
+      <Price>{`a partir de R$ ${installment12Months}`}</Price>
     </Card>
   );
 };

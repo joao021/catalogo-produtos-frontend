@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Image from "next/image";
 
 export const HeaderWrap = styled.header`
   width: 100%;
@@ -32,4 +33,8 @@ export const CartButton = styled.button`
   svg {
     fill: currentColor;
   }
+`;
+
+export const Imagelogo = styled(Image)`
+  cursor: pointer;
 `;

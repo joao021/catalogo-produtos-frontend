@@ -1,14 +1,13 @@
 import React from "react";
-import GlobalStyle, { Container } from "../../app/globals";
-import Header from "../../components/organisms/Header/Header";
 import ProductList from "../../components/organisms/ProductList/ProductList";
+import GlobalStyle from "../../styles/globalStyles";
+import { Container } from "../../app/globals";
 
 const HomePage: React.FC = () => {
   return (
     <>
       <GlobalStyle />
       <Container>
-        <Header />
         <ProductList />
       </Container>
     </>
