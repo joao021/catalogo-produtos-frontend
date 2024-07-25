@@ -1,6 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { Product } from "../../types/types";
+import { Product } from "../../types";
 import { fetchProducts, fetchProductById } from "../../utils/fetchProducts";
 import {
   Container,
@@ -13,34 +13,12 @@ import {
   PriceOption,
   ContentWrap,
 } from "./ProductPage.styles";
-import Slider from "react-slick";
-import { useEffect, useState } from "react";
-
-const setCache = (key: string, data: any, ttl: number) => {
-  const now = new Date().getTime();
-  const item = {
-    data,
-    expiry: now + ttl,
-  };
-  localStorage.setItem(key, JSON.stringify(item));
-};
-
-const getCache = (key: string) => {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  const item = JSON.parse(itemStr);
-  const now = new Date().getTime();
-  if (now > item.expiry) {
-    localStorage.removeItem(key);
-    return null;
-  }
-  return item.data;
-};
+import { useState, useEffect } from "react";
+import { useCart } from "../../context/CartContext";
+import useMemoryCache from "../../hooks/UserMemoryCache";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const products = await fetchProducts(1, 100); 
+  const products = await fetchProducts(1, 100);
   const paths = products.map((product) => ({
     params: { id: product.id.toString() },
   }));
@@ -50,23 +28,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const id = context.params?.id as string;
-  const cacheKey = `product_${id}`;
-  let product = null;
-
-  if (typeof window !== "undefined") {
-    product = getCache(cacheKey);
-  }
+  const product = await fetchProductById(parseInt(id));
 
   if (!product) {
-    product = await fetchProductById(id);
-
-    if (!product) {
-      return { notFound: true };
-    }
-
-    if (typeof window !== "undefined") {
-      setCache(cacheKey, product, 3600000); 
-    }
+    return { notFound: true };
   }
 
   return {
@@ -75,103 +40,84 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 };
 
-const ProductPage: React.FC<{ product: Product }> = ({ product }) => {
+interface ProductPageProps {
+  product: Product;
+}
+
+const carouselSettings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+};
+
+const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
   const router = useRouter();
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [isInCart, setIsInCart] = useState<boolean>(false);
+  const { cartItems, addToCart } = useCart();
+  const cachedProduct = useMemoryCache<Product>(
+    product.id,
+    () => fetchProductById(product.id),
+    3600000
+  );
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const productInCart = cart.find((item: Product) => item.id === product.id);
-    setIsInCart(!!productInCart);
-  }, [product.id]);
+    if (cachedProduct) {
+      const cart: Product[] = JSON.parse(localStorage.getItem("cart") || "[]");
+      setIsInCart(cart.some((item) => item.id === cachedProduct.id));
+    }
+  }, [cachedProduct]);
 
-  if (router.isFallback) {
+  if (router.isFallback || !cachedProduct) {
     return <div>Loading...</div>;
   }
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
-
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    if (isInCart) {
-      const updatedCart = cart.filter(
-        (item: Product) => item.id !== product.id
-      );
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      setIsInCart(false);
-      alert("Produto removido do carrinho!");
-    } else {
-      const updatedCart = [...cart, { ...product, selectedPrice }];
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    if (cachedProduct && selectedPrice) {
+      if (cartItems.some((item) => item.id === cachedProduct.id)) {
+        return;
+      }
+      addToCart(cachedProduct, selectedPrice);
       setIsInCart(true);
-      alert("Produto adicionado ao carrinho!");
     }
   };
 
-  const handlePriceSelect = (price: string) => {
-    setSelectedPrice(price);
-  };
+  const renderPriceOption = (priceLabel: string, priceValue: number) => (
+    <PriceOption
+      isSelected={selectedPrice === `${priceLabel}: R$ ${priceValue}`}
+      onClick={() => setSelectedPrice(`${priceLabel}: R$ ${priceValue}`)}
+    >
+      {priceLabel}: R$ {priceValue}
+    </PriceOption>
+  );
 
   return (
     <Container>
-      <Title>{product.name}</Title>
+      <Title>{cachedProduct.name}</Title>
       <ContentWrap>
-        <ImageCarousel {...settings}>
+        <ImageCarousel {...carouselSettings}>
           <CarouselImage
-            src={product.imageUrlFront}
-            alt={`${product.name} front`}
+            src={cachedProduct.imageUrlFront}
+            alt={`${cachedProduct.name} front`}
           />
           <CarouselImage
-            src={product.imageUrlSide}
-            alt={`${product.name} side`}
+            src={cachedProduct.imageUrlSide}
+            alt={`${cachedProduct.name} side`}
           />
           <CarouselImage
-            src={product.imageUrlBack}
-            alt={`${product.name} back`}
+            src={cachedProduct.imageUrlBack}
+            alt={`${cachedProduct.name} back`}
           />
         </ImageCarousel>
         <div>
-          <Description>{product.description}</Description>
-          <PriceOption
-            isSelected={
-              selectedPrice === `Preço 12 meses: R$ ${product.price12Months}`
-            }
-            onClick={() =>
-              handlePriceSelect(`Preço 12 meses: R$ ${product.price12Months}`)
-            }
-          >
-            Preço 12 meses: R$ {product.price12Months}
-          </PriceOption>
-          <PriceOption
-            isSelected={
-              selectedPrice === `Preço 6 meses: R$ ${product.price6Months}`
-            }
-            onClick={() =>
-              handlePriceSelect(`Preço 6 meses: R$ ${product.price6Months}`)
-            }
-          >
-            Preço 6 meses: R$ {product.price6Months}
-          </PriceOption>
-          <PriceOption
-            isSelected={
-              selectedPrice === `Preço 3 meses: R$ ${product.price3Months}`
-            }
-            onClick={() =>
-              handlePriceSelect(`Preço 3 meses: R$ ${product.price3Months}`)
-            }
-          >
-            Preço 3 meses: R$ {product.price3Months}
-          </PriceOption>
+          <Description>{cachedProduct.description}</Description>
+          {renderPriceOption("Preço 12 meses", cachedProduct.price12Months)}
+          {renderPriceOption("Preço 6 meses", cachedProduct.price6Months)}
+          {renderPriceOption("Preço 3 meses", cachedProduct.price3Months)}
           <AddToCartButton onClick={handleAddToCart} disabled={!selectedPrice}>
-            {isInCart ? "Remover do Carrinho" : "Adicionar ao Carrinho"}
+            Adicionar ao Carrinho
           </AddToCartButton>
         </div>
       </ContentWrap>
