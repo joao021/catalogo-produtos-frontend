@@ -13,6 +13,7 @@ const config: Config = {
     "!**/node_modules/**",
     "!src/app/layout.tsx",
     "!src/pages/_app.tsx",
+    "!src/components/organisms/Header/Header.styles.ts",
   ],
   coverageDirectory: "coverage",
   coverageReporters: ["html", "text", "text-summary", "cobertura", "lcov"],

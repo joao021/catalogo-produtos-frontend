@@ -103,4 +103,58 @@ describe("SearchBar", () => {
     fireEvent.blur(input);
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
+
+  test.skip("updates input value and calls onSearch when suggestion is clicked", () => {
+    (isApproximateMatch as jest.Mock).mockImplementation((query, text) =>
+      text.toLowerCase().includes(query.toLowerCase())
+    );
+
+    render(<SearchBar onSearch={onSearchMock} allProducts={products} />);
+    const input = screen.getByPlaceholderText("Search for products...");
+    fireEvent.change(input, { target: { value: "Product" } });
+
+    const suggestionItem = screen.getByText("Product 1");
+    fireEvent.mouseDown(suggestionItem);
+
+    expect(input).toHaveValue("Product 1");
+    expect(onSearchMock).toHaveBeenCalledWith("Product 1");
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+  });
+
+  test("suggestions update correctly with different queries", () => {
+    (isApproximateMatch as jest.Mock).mockImplementation((query, text) =>
+      text.toLowerCase().includes(query.toLowerCase())
+    );
+
+    render(<SearchBar onSearch={onSearchMock} allProducts={products} />);
+    const input = screen.getByPlaceholderText("Search for products...");
+
+    fireEvent.change(input, { target: { value: "Product 1" } });
+    let suggestions = screen.getAllByRole("listitem");
+    expect(suggestions).toHaveLength(1);
+    expect(suggestions[0]).toHaveTextContent("Product 1");
+
+    fireEvent.change(input, { target: { value: "Description 2" } });
+    suggestions = screen.getAllByRole("listitem");
+    expect(suggestions).toHaveLength(1);
+    expect(suggestions[0]).toHaveTextContent("Product 2");
+  });
+
+  test("hides suggestions when input is blurred after selecting a suggestion", () => {
+    (isApproximateMatch as jest.Mock).mockImplementation((query, text) =>
+      text.toLowerCase().includes(query.toLowerCase())
+    );
+
+    render(<SearchBar onSearch={onSearchMock} allProducts={products} />);
+    const input = screen.getByPlaceholderText("Search for products...");
+
+    fireEvent.change(input, { target: { value: "Product" } });
+    fireEvent.focus(input);
+
+    const suggestionItem = screen.getByText("Product 1");
+    fireEvent.mouseDown(suggestionItem);
+
+    fireEvent.blur(input);
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+  });
 });

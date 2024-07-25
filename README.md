@@ -26,6 +26,7 @@ Crie um arquivo `.env` na raiz do projeto e adicione suas variáveis de ambiente
 
 ```env
 # URL base para a API
+CI=true (se for true ele testa com o mock, se for false chama a url original do API_URL)
 API_URL=http://localhost:3001
 ```
 
@@ -46,6 +47,7 @@ Isso irá construir e iniciar os serviços `app` conforme definido no arquivo `d
 ### 5. Acessar a Aplicação
 
 - A aplicação Next.js estará disponível em [http://localhost:5173](http://localhost:5173)
+
 
 
 ## Scripts Disponíveis
