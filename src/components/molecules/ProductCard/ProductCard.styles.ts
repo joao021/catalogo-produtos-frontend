@@ -9,7 +9,7 @@ export const Card = styled.div`
   text-align: center;
   gap: 0.5rem;
   background: white;
-
+  cursor: pointer;
   img {
     width: 100%;
     height: 100%;

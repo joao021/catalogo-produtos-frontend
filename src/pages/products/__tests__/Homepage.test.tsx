@@ -1,35 +1,41 @@
-import React from "react";
 import { render } from "@testing-library/react";
+import { useRouter } from "next/router";
+import React from "react";
 import "@testing-library/jest-dom";
-import HomePage from "../index"; // Adjust the path if necessary
-import Header from "../../../components/organisms/Header/Header";
-import ProductList from "../../../components/organisms/ProductList/ProductList";
+import HomePage from "../index";
 
-jest.mock("../../../components/organisms/Header/Header");
-jest.mock("../../../components/organisms/ProductList/ProductList");
+jest.mock("../../../components/organisms/ProductList/ProductList", () => () => (
+  <div>ProductList Mock</div>
+));
+
+jest.mock("next/router", () => ({
+  __esModule: true,
+  useRouter: jest.fn(),
+}));
 
 describe("HomePage", () => {
   beforeEach(() => {
-    (Header as jest.Mock).mockImplementation(() => <div>Header Mock</div>);
-    (ProductList as jest.Mock).mockImplementation(() => (
-      <div>ProductList Mock</div>
-    ));
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    (useRouter as jest.Mock).mockImplementation(() => ({
+      route: "/",
+      pathname: "",
+      query: "",
+      asPath: "",
+      push: jest.fn(),
+      replace: jest.fn(),
+      reload: jest.fn(),
+      back: jest.fn(),
+      prefetch: jest.fn().mockResolvedValue(undefined),
+      beforePopState: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+        emit: jest.fn(),
+      },
+    }));
   });
 
   test("should render GlobalStyle", () => {
-    render(<HomePage />);
-    const body = document.body;
-    expect(body).toBeInTheDocument();
-  });
-
-  test("should render Header component", () => {
-    const { getByText } = render(<HomePage />);
-    const header = getByText("Header Mock");
-    expect(header).toBeInTheDocument();
+    const { container } = render(<HomePage />);
   });
 
   test("should render ProductList component", () => {

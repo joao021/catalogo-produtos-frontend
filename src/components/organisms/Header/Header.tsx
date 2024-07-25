@@ -1,12 +1,24 @@
-import { CartButton, Container, HeaderWrap } from "./Header.styles";
+import { CartButton, Container, HeaderWrap, Imagelogo } from "./Header.styles";
 import { FaShoppingCart } from "react-icons/fa";
-import Image from "next/image";
+import { useRouter } from "next/router";
 
 const Header: React.FC = ({}) => {
+  const router = useRouter();
+
+  const handleLogoClick = () => {
+    router.push("/products");
+  };
+
   return (
     <HeaderWrap>
       <Container>
-        <Image width={50} height={30} src="/assets/allu-logo.png" alt="alluLogo" />
+        <Imagelogo
+          onClick={handleLogoClick}
+          width={50}
+          height={30}
+          src="/assets/allu-logo.png"
+          alt="alluLogo"
+        />
         <CartButton>
           <FaShoppingCart size={24} />
         </CartButton>
