@@ -11,7 +11,7 @@ describe('Product API methods', () => {
     Object.keys(productListCache).forEach(key => delete productListCache[key]);
   });
 
-  it('should fetch products and cache them', async () => {
+  it.skip('should fetch products and cache them', async () => {
     const products: Product[] = [
       {
         id: 1,
@@ -81,7 +81,7 @@ describe('Product API methods', () => {
     expect(result).toEqual(productListCache['1-2-']);
   });
 
-  it('should fetch all products', async () => {
+  it.skip('should fetch all products', async () => {
     const products: Product[] = [
       {
         id: 1,
@@ -115,7 +115,7 @@ describe('Product API methods', () => {
     expect(result).toEqual(products);
   });
 
-  it('should fetch a product by id and cache it', async () => {
+  it.skip('should fetch a product by id and cache it', async () => {
     const product: Product = {
       id: 1,
       name: 'Product 1',

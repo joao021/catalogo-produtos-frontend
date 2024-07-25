@@ -73,7 +73,7 @@ describe("ProductPage", () => {
     expect(screen.getByText("Preço 3 meses: R$ 350")).toBeInTheDocument();
   });
 
-  test.skip("allows selecting a price option", async () => {
+  test("allows selecting a price option", async () => {
     render(<ProductPage product={mockProduct} />);
 
     const priceOption = await screen.findByText("Preço 12 meses: R$ 1200");
@@ -82,14 +82,14 @@ describe("ProductPage", () => {
     expect(priceOption).toHaveStyle("background-color: #f0f0f0");
   });
 
-  test.skip("disables Add to Cart button if no price is selected", async () => {
+  test("disables Add to Cart button if no price is selected", async () => {
     render(<ProductPage product={mockProduct} />);
 
     const addToCartButton = await screen.findByText("Adicionar ao Carrinho");
     expect(addToCartButton).toBeDisabled();
   });
 
-  test.skip("enables Add to Cart button when a price is selected", async () => {
+  test("enables Add to Cart button when a price is selected", async () => {
     render(<ProductPage product={mockProduct} />);
 
     const priceOption = await screen.findByText("Preço 12 meses: R$ 1200");
@@ -99,7 +99,7 @@ describe("ProductPage", () => {
     expect(addToCartButton).toBeEnabled();
   });
 
-  test.skip("adds product to cart without updating button text", async () => {
+  test("adds product to cart without updating button text", async () => {
     render(<ProductPage product={mockProduct} />);
 
     const priceOption = await screen.findByText("Preço 12 meses: R$ 1200");

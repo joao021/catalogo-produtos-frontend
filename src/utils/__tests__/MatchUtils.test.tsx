@@ -21,6 +21,6 @@ describe("isApproximateMatch", () => {
 
   it("should handle special characters correctly", () => {
     expect(isApproximateMatch("hello!", "hello!")).toBe(true);
-    expect(isApproximateMatch("hello", "hello!")).toBe(true); // ignore non-alphanumeric characters
+    expect(isApproximateMatch("hello", "hello!")).toBe(true);
   });
 });
