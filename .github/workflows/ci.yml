@@ -34,6 +34,7 @@ jobs:
       DB_USERNAME: root
       DB_PASSWORD: root_password
       DB_DATABASE: catalogo_produtos
+      API_URL: http://mockserver
 
     steps:
       - name: Checkout code
@@ -54,4 +55,6 @@ jobs:
         run: npm run test
 
       - name: Build project
+        env:
+          CI: true
         run: npm run build

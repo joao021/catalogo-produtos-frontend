@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Catalogo de Produtos Allu
 
-First, run the development server:
+Catalogo Allu é uma aplicação Next.js que exibe informações de produtos para aluguel. Esta aplicação está configurada para desenvolvimento, construção e execução com Docker.
+
+## Requisitos
+
+Certifique-se de ter os seguintes softwares instalados em seu sistema:
+- Docker
+- Node.js (para desenvolvimento local)
+- Yarn (opcional, mas recomendado)
+
+## Configuração do Projeto
+
+### 1. Clonar o Repositório
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/joao021/catalogo-produtos-frontend
+cd catalogo-produtos-frontend
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configurar Variáveis de Ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crie um arquivo `.env` na raiz do projeto e adicione suas variáveis de ambiente:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```env
+# URL base para a API
+CI=true (se for true ele testa com o mock, se for false chama a url original do API_URL)
+API_URL=http://localhost:3001
+```
 
-## Learn More
+### 3. Configurar Docker
 
-To learn more about Next.js, take a look at the following resources:
+O projeto está configurado para usar Docker para desenvolvimento e produção. Certifique-se de que o Docker está instalado e configurado em seu sistema.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Subir os Containers Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Para iniciar os containers Docker, execute:
 
-## Deploy on Vercel
+```bash
+docker-compose up --build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Isso irá construir e iniciar os serviços `app` conforme definido no arquivo `docker-compose.yml`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 5. Acessar a Aplicação
+
+- A aplicação Next.js estará disponível em [http://localhost:5173](http://localhost:5173)
+
+
+
+## Scripts Disponíveis
+
+No `package.json`, os seguintes scripts estão disponíveis:
+
+- `dev`: Inicia o servidor de desenvolvimento Next.js.
+- `start`: Inicia o servidor Next.js em modo de produção.
+- `build`: Compila a aplicação Next.js para produção.
+- `lint`: Executa o ESLint para verificar o código.
+- `test`: Executa os testes com Jest.
+- `test:watch`: Executa os testes com Jest em modo watch.
