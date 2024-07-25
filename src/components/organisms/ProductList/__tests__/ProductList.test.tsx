@@ -3,7 +3,6 @@ import {
   render,
   screen,
   waitFor,
-  fireEvent,
   act,
 } from "@testing-library/react";
 import ProductList from "../ProductList";
@@ -11,20 +10,11 @@ import {
   fetchProducts,
   fetchAllProducts,
 } from "../../../../utils/fetchProducts";
-import { isApproximateMatch } from "../../../../utils/MatchUtils";
 
 jest.mock("../../../../utils/fetchProducts");
-jest.mock("../../../../utils/MatchUtils");
 
-const mockFetchProducts = fetchProducts as jest.MockedFunction<
-  typeof fetchProducts
->;
-const mockFetchAllProducts = fetchAllProducts as jest.MockedFunction<
-  typeof fetchAllProducts
->;
-const mockIsApproximateMatch = isApproximateMatch as jest.MockedFunction<
-  typeof isApproximateMatch
->;
+const mockFetchProducts = fetchProducts as jest.MockedFunction<typeof fetchProducts>;
+const mockFetchAllProducts = fetchAllProducts as jest.MockedFunction<typeof fetchAllProducts>;
 
 const mockProducts = [
   {
@@ -58,7 +48,6 @@ describe("ProductList", () => {
   beforeEach(() => {
     mockFetchProducts.mockReset();
     mockFetchAllProducts.mockReset();
-    mockIsApproximateMatch.mockReset();
 
     global.IntersectionObserver = jest.fn((callback) => {
       intersectionObserverCallback = callback;
@@ -69,9 +58,7 @@ describe("ProductList", () => {
       };
     }) as jest.Mock;
 
-    intersectionObserverInstance = new IntersectionObserver(
-      intersectionObserverCallback
-    );
+    intersectionObserverInstance = new IntersectionObserver(intersectionObserverCallback);
   });
 
   it("renders the ProductList component", async () => {
