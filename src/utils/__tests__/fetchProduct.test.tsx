@@ -1,86 +1,98 @@
-import MockAdapter from 'axios-mock-adapter';
-import api from '../api';
-import { fetchProducts, fetchProductById } from '../fetchProducts';
-import { Product } from '../../types';
+import MockAdapter from "axios-mock-adapter";
+import api from "../api";
+import {
+  fetchProducts,
+  fetchProductById,
+  fetchAllProducts,
+  productCache,
+  productListCache,
+} from "../fetchProducts";
+import { Product } from "../../types";
 
-const mock = new MockAdapter(api); 
+const mock = new MockAdapter(api);
 
-describe('fetchProducts', () => {
+const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: "Product 1",
+    description: "",
+    price12Months: 100,
+    price6Months: 50,
+    price3Months: 25,
+    imageUrlFront: "",
+    imageUrlSide: "",
+    imageUrlBack: "",
+  },
+  {
+    id: 2,
+    name: "Product 2",
+    description: "",
+    price12Months: 200,
+    price6Months: 100,
+    price3Months: 50,
+    imageUrlFront: "",
+    imageUrlSide: "",
+    imageUrlBack: "",
+  },
+];
+
+describe("fetchProducts", () => {
   afterEach(() => {
     mock.reset();
+    Object.keys(productCache).forEach((key) => delete productCache[+key]);
+    Object.keys(productListCache).forEach(
+      (key) => delete productListCache[key]
+    );
   });
 
-  it('should fetch products and cache them', async () => {
-    const products: Product[] = [
-      { id: 1, name: 'Product 1', description: '', price12Months: 0, price6Months: 0, price3Months: 0, imageUrlFront: '', imageUrlSide: '', imageUrlBack: '' },
-      { id: 2, name: 'Product 2', description: '', price12Months: 0, price6Months: 0, price3Months: 0, imageUrlFront: '', imageUrlSide: '', imageUrlBack: '' }
-    ];
+  it("should return cached products if available", async () => {
+    productListCache["1-2-"] = mockProducts;
 
-    mock.onGet('/products', { params: { page: 1, limit: 2 } }).reply(200, products);
+    const cachedProducts = await fetchProducts(1, 2);
 
-    const fetchedProducts = await fetchProducts(1, 2);
-
-    expect(fetchedProducts).toEqual(products);
-  });
-
-  it('should return cached products if available', async () => {
-    const products: Product[] = [
-      { id: 1, name: 'Product 1', description: '', price12Months: 0, price6Months: 0, price3Months: 0, imageUrlFront: '', imageUrlSide: '', imageUrlBack: '' },
-      { id: 2, name: 'Product 2', description: '', price12Months: 0, price6Months: 0, price3Months: 0, imageUrlFront: '', imageUrlSide: '', imageUrlBack: '' }
-    ];
-
-    mock.onGet('/products', { params: { page: 1, limit: 2 } }).reply(200, products);
-
-    await fetchProducts(1, 2);
-    const cachedProducts = await fetchProducts(1, 2); 
-
-    expect(cachedProducts).toEqual(products);
+    expect(cachedProducts).toEqual(mockProducts);
   });
 });
 
-describe('fetchProductById', () => {
+describe("fetchProductById", () => {
+  afterEach(() => {
+    mock.reset();
+    Object.keys(productCache).forEach((key) => delete productCache[+key]);
+  });
+
+  it("should fetch product by ID and cache it", async () => {
+    const product = mockProducts[0];
+
+    mock.onGet(`/products/${product.id}`).reply(200, product);
+
+    const fetchedProduct = await fetchProductById(product.id);
+
+    expect(fetchedProduct).toEqual(product);
+
+    expect(productCache[product.id]).toEqual(product);
+  });
+
+  it("should return cached product if available", async () => {
+    productCache[mockProducts[0].id] = mockProducts[0];
+
+    const cachedProduct = await fetchProductById(mockProducts[0].id);
+
+    expect(cachedProduct).toEqual(mockProducts[0]);
+  });
+});
+
+describe("fetchAllProducts", () => {
   afterEach(() => {
     mock.reset();
   });
 
-  it('should fetch product by ID and cache it', async () => {
-    const product: Product = {
-      id: 1,
-      name: 'Product 1',
-      description: '',
-      price12Months: 0,
-      price6Months: 0,
-      price3Months: 0,
-      imageUrlFront: '',
-      imageUrlSide: '',
-      imageUrlBack: ''
-    };
+  it("should fetch all products", async () => {
+    mock
+      .onGet("/products", { params: { limit: 8 } })
+      .reply(200, mockProducts);
 
-    mock.onGet('/products/1').reply(200, product);
+    const fetchedProducts = await fetchAllProducts();
 
-    const fetchedProduct = await fetchProductById(1);
-
-    expect(fetchedProduct).toEqual(product);
-  });
-
-  it('should return cached product if available', async () => {
-    const product: Product = {
-      id: 1,
-      name: 'Product 1',
-      description: '',
-      price12Months: 0,
-      price6Months: 0,
-      price3Months: 0,
-      imageUrlFront: '',
-      imageUrlSide: '',
-      imageUrlBack: ''
-    };
-
-    mock.onGet('/products/1').reply(200, product);
-
-    await fetchProductById(1);
-    const cachedProduct = await fetchProductById(1); 
-
-    expect(cachedProduct).toEqual(product);
+    expect(fetchedProducts).toEqual(mockProducts);
   });
 });

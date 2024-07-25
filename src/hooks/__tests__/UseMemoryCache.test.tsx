@@ -1,4 +1,5 @@
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import useMemoryCache from "../UserMemoryCache";
 
 const mockNow = 1620000000000;
@@ -21,13 +22,16 @@ describe("useMemoryCache", () => {
   test("should fetch data if there is no cached data", async () => {
     const cacheKey = "testKey";
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useMemoryCache<string>(cacheKey, fetcherMock, 5000)
     );
 
     expect(result.current).toBe(null);
-    await waitForNextUpdate();
-    expect(result.current).toBe("fetched data");
+
+    await waitFor(() => {
+      expect(result.current).toBe("fetched data");
+    });
+
     expect(fetcherMock).toHaveBeenCalledTimes(1);
   });
 });

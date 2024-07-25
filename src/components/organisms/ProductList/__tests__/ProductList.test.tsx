@@ -1,19 +1,36 @@
-import React, { act } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import React from "react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
 import ProductList from "../ProductList";
-import { fetchProducts } from "../../../../utils/fetchProducts";
+import {
+  fetchProducts,
+  fetchAllProducts,
+} from "../../../../utils/fetchProducts";
+import { isApproximateMatch } from "../../../../utils/MatchUtils";
 
 jest.mock("../../../../utils/fetchProducts");
+jest.mock("../../../../utils/MatchUtils");
 
 const mockFetchProducts = fetchProducts as jest.MockedFunction<
   typeof fetchProducts
+>;
+const mockFetchAllProducts = fetchAllProducts as jest.MockedFunction<
+  typeof fetchAllProducts
+>;
+const mockIsApproximateMatch = isApproximateMatch as jest.MockedFunction<
+  typeof isApproximateMatch
 >;
 
 const mockProducts = [
   {
     id: 1,
     name: "Product 1",
-    description: "",
+    description: "Description 1",
     price12Months: 0,
     price6Months: 0,
     price3Months: 0,
@@ -24,7 +41,7 @@ const mockProducts = [
   {
     id: 2,
     name: "Product 2",
-    description: "",
+    description: "Description 2",
     price12Months: 0,
     price6Months: 0,
     price3Months: 0,
@@ -40,6 +57,8 @@ describe("ProductList", () => {
 
   beforeEach(() => {
     mockFetchProducts.mockReset();
+    mockFetchAllProducts.mockReset();
+    mockIsApproximateMatch.mockReset();
 
     global.IntersectionObserver = jest.fn((callback) => {
       intersectionObserverCallback = callback;
@@ -57,6 +76,7 @@ describe("ProductList", () => {
 
   it("renders the ProductList component", async () => {
     mockFetchProducts.mockResolvedValue(mockProducts);
+    mockFetchAllProducts.mockResolvedValue(mockProducts);
 
     render(<ProductList />);
 
@@ -73,6 +93,7 @@ describe("ProductList", () => {
 
   it("loads more products when scrolling to the bottom", async () => {
     mockFetchProducts.mockResolvedValue(mockProducts);
+    mockFetchAllProducts.mockResolvedValue(mockProducts);
 
     render(<ProductList />);
 
@@ -93,7 +114,7 @@ describe("ProductList", () => {
             rootBounds: null,
             time: 0,
             boundingClientRect: {} as DOMRectReadOnly,
-            intersectionRect: {} as DOMRectReadOnly
+            intersectionRect: {} as DOMRectReadOnly,
           },
         ],
         intersectionObserverInstance
@@ -108,6 +129,7 @@ describe("ProductList", () => {
 
   it("displays an error message when fetching products fails", async () => {
     mockFetchProducts.mockRejectedValue(new Error("Failed to load products"));
+    mockFetchAllProducts.mockResolvedValue(mockProducts);
 
     render(<ProductList />);
 
@@ -120,6 +142,7 @@ describe("ProductList", () => {
 
   it("displays a message when no more products are available", async () => {
     mockFetchProducts.mockResolvedValue([]);
+    mockFetchAllProducts.mockResolvedValue(mockProducts);
 
     render(<ProductList />);
 

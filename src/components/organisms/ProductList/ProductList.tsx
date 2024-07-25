@@ -2,10 +2,13 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import ProductCard from "../../molecules/ProductCard/ProductCard";
 import { Container, ListContainer, Title } from "./ProductList.styles";
 import { Product } from "../../../types";
-import { fetchProducts } from "../../../utils/fetchProducts";
+import { fetchProducts, fetchAllProducts } from "../../../utils/fetchProducts";
+import SearchBar from "../../molecules/SearchBar/SearchBar";
+import { isApproximateMatch } from "../../../utils/MatchUtils";
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +35,9 @@ const ProductList: React.FC = () => {
     setError(null);
     try {
       const newProducts = await fetchProducts(page, 8);
-      setProducts((prevProducts) => [...prevProducts, ...newProducts]);
+      setProducts((prevProducts) =>
+        page === 1 ? newProducts : [...prevProducts, ...newProducts]
+      );
       setHasMore(newProducts.length > 0);
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -41,12 +46,23 @@ const ProductList: React.FC = () => {
     setLoading(false);
   }, []);
 
+  const loadAllProducts = useCallback(async () => {
+    try {
+      const allProds = await fetchAllProducts();
+      setAllProducts(allProds);
+      setProducts(allProds);
+    } catch (error) {
+      console.error("Failed to fetch all products:", error);
+    }
+  }, []);
+
   useEffect(() => {
     if (!initialLoadPerformed.current) {
       loadProducts(1);
+      loadAllProducts();
       initialLoadPerformed.current = true;
     }
-  }, [loadProducts]);
+  }, [loadProducts, loadAllProducts]);
 
   useEffect(() => {
     if (page > 1) {
@@ -60,14 +76,32 @@ const ProductList: React.FC = () => {
     };
   }, []);
 
+  const handleSearch = (query: string) => {
+    if (query.length >= 2) {
+      const filteredProducts = allProducts.filter(
+        (product) =>
+          isApproximateMatch(query, product.name) ||
+          isApproximateMatch(query, product.description)
+      );
+      setProducts(filteredProducts);
+    } else {
+      setProducts(allProducts);
+    }
+  };
+
+
   return (
     <Container>
       <Title>Catálogo de Produtos</Title>
+      <SearchBar onSearch={handleSearch} allProducts={allProducts} />
       <ListContainer>
         {products.map((product, index) => {
           if (products.length === index + 1) {
             return (
-              <div ref={lastProductElementRef} key={product.id}>
+              <div
+                ref={lastProductElementRef}
+                key={product.id}
+              >
                 <ProductCard product={product} />
               </div>
             );

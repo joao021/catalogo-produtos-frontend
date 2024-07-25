@@ -35,7 +35,7 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^next/image$": "<rootDir>/__mocks__/next/image.js",
   },
-  modulePathIgnorePatterns: ["<rootDir>/src/app/api/auth/"],
+  modulePathIgnorePatterns: ["<rootDir>/src/app/api/auth/", "\\.styles\\.ts$"],
   preset: "ts-jest",
   setupFilesAfterEnv: ["<rootDir>/.jest/jest.setup.ts"],
   testEnvironment: "jest-environment-jsdom",

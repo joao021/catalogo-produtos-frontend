@@ -37,7 +37,6 @@ export const ImageCarousel = styled(Slider)`
   .slick-next:before {
     font-size: 30px;
   }
-  ,
 `;
 
 export const CarouselImage = styled.img`
@@ -86,5 +85,19 @@ export const AddToCartButton = styled.button`
   margin-top: 20px;
   &:hover {
     background-color: ${({ disabled }) => (disabled ? "#a0a0a0" : "#005bb5")};
+  }
+`;
+
+export const ShowMoreButton = styled.button`
+  background: none;
+  border: none;
+  color: #0070f3;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 1rem;
+  margin-top: 5px;
+
+  &:hover {
+    color: #005bb5;
   }
 `;

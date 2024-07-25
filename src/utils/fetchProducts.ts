@@ -1,20 +1,21 @@
 import { Product } from "../types";
 import api from "./api";
 
-const productCache: { [key: number]: Product } = {};
-const productListCache: { [key: string]: Product[] } = {};
+export const productCache: { [key: number]: Product } = {};
+export const productListCache: { [key: string]: Product[] } = {};
 
 export const fetchProducts = async (
   page: number,
-  limit: number
+  limit: number,
+  query?: string
 ): Promise<Product[]> => {
-  const cacheKey = `${page}-${limit}`;
+  const cacheKey = `${page}-${limit}-${query || ""}`;
   if (productListCache[cacheKey]) {
     return productListCache[cacheKey];
   }
 
   const response = await api.get("/products", {
-    params: { page, limit },
+    params: { page, limit, query },
   });
   const products = response.data;
   products.forEach((product: Product) => {
@@ -23,6 +24,13 @@ export const fetchProducts = async (
 
   productListCache[cacheKey] = products;
   return products;
+};
+
+export const fetchAllProducts = async (): Promise<Product[]> => {
+  const response = await api.get("/products", {
+    params: { limit: 8 },
+  });
+  return response.data;
 };
 
 export const fetchProductById = async (id: number): Promise<Product> => {

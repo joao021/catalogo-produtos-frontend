@@ -6,12 +6,12 @@ import {
   Container,
   Title,
   Description,
-  Price,
   ImageCarousel,
   CarouselImage,
   AddToCartButton,
   PriceOption,
   ContentWrap,
+  ShowMoreButton,
 } from "./ProductPage.styles";
 import { useState, useEffect } from "react";
 import { useCart } from "../../context/CartContext";
@@ -56,6 +56,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
   const router = useRouter();
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [isInCart, setIsInCart] = useState<boolean>(false);
+  const [showFullDescription, setShowFullDescription] =
+    useState<boolean>(false);
   const { cartItems, addToCart } = useCart();
   const cachedProduct = useMemoryCache<Product>(
     product.id,
@@ -112,7 +114,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
           />
         </ImageCarousel>
         <div>
-          <Description>{cachedProduct.description}</Description>
+          <Description>
+            {showFullDescription
+              ? cachedProduct.description
+              : `${cachedProduct.description.substring(0, 150)}...`}
+            <ShowMoreButton
+              onClick={() => setShowFullDescription(!showFullDescription)}
+            >
+              {showFullDescription ? "Ver menos" : "Ver mais"}
+            </ShowMoreButton>
+          </Description>
           {renderPriceOption("Preço 12 meses", cachedProduct.price12Months)}
           {renderPriceOption("Preço 6 meses", cachedProduct.price6Months)}
           {renderPriceOption("Preço 3 meses", cachedProduct.price3Months)}

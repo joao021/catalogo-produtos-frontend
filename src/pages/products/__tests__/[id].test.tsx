@@ -69,7 +69,6 @@ describe("ProductPage", () => {
     await waitFor(() => {
       expect(screen.getByText("Test Product")).toBeInTheDocument();
     });
-    expect(screen.getByText("This is a test product")).toBeInTheDocument();
     expect(screen.getByText("Preço 12 meses: R$ 1200")).toBeInTheDocument();
     expect(screen.getByText("Preço 6 meses: R$ 650")).toBeInTheDocument();
     expect(screen.getByText("Preço 3 meses: R$ 350")).toBeInTheDocument();
