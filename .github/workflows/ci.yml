@@ -34,6 +34,7 @@ jobs:
       DB_USERNAME: root
       DB_PASSWORD: root_password
       DB_DATABASE: catalogo_produtos
+      API_URL: http://mockserver
 
     steps:
       - name: Checkout code
