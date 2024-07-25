@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ProductCard from "../../molecules/ProductCard/ProductCard";
 import { Container, ListContainer, Title } from "./ProductList.styles";
-import { Product } from "../../../types/types";
+import { Product } from "../../../types";
 import { fetchProducts } from "../../../utils/fetchProducts";
 
 const ProductList: React.FC = () => {
@@ -11,6 +11,7 @@ const ProductList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
+  const initialLoadPerformed = useRef(false);
 
   const lastProductElementRef = useCallback(
     (node: HTMLElement | null) => {
@@ -26,40 +27,32 @@ const ProductList: React.FC = () => {
     [loading, hasMore]
   );
 
-  useEffect(() => {
-    const loadInitialProducts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const initialProducts = await fetchProducts(1, 8);
-        setProducts(initialProducts);
-        setHasMore(initialProducts.length > 0);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        setError("Failed to load products. Please try again.");
-      }
-      setLoading(false);
-    };
-    loadInitialProducts();
+  const loadProducts = useCallback(async (page: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const newProducts = await fetchProducts(page, 8);
+      setProducts((prevProducts) => [...prevProducts, ...newProducts]);
+      setHasMore(newProducts.length > 0);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      setError("Failed to load products. Please try again.");
+    }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (page === 1) return; 
-    const loadMoreProducts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const newProducts = await fetchProducts(page, 8);
-        setProducts((prevProducts) => [...prevProducts, ...newProducts]);
-        setHasMore(newProducts.length > 0);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        setError("Failed to load products. Please try again.");
-      }
-      setLoading(false);
-    };
-    loadMoreProducts();
-  }, [page]);
+    if (!initialLoadPerformed.current) {
+      loadProducts(1);
+      initialLoadPerformed.current = true;
+    }
+  }, [loadProducts]);
+
+  useEffect(() => {
+    if (page > 1) {
+      loadProducts(page);
+    }
+  }, [page, loadProducts]);
 
   useEffect(() => {
     return () => {
@@ -85,7 +78,7 @@ const ProductList: React.FC = () => {
       </ListContainer>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
-      {!hasMore && <p></p>}
+      {!hasMore && <p>No more products to load</p>}
     </Container>
   );
 };

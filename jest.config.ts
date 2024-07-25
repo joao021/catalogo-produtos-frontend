@@ -8,7 +8,12 @@ const createJestConfig = nextJest({
 const config: Config = {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ["src/**/*.(js|ts)(x)?", "!**/node_modules/**"],
+  collectCoverageFrom: [
+    "src/**/*.(js|ts)(x)?",
+    "!**/node_modules/**",
+    "!src/app/layout.tsx",
+    "!src/pages/_app.tsx",
+  ],
   coverageDirectory: "coverage",
   coverageReporters: ["html", "text", "text-summary", "cobertura", "lcov"],
   coverageThreshold: {
@@ -24,6 +29,7 @@ const config: Config = {
       location: {},
     },
   },
+  maxWorkers: "50%",
   moduleDirectories: ["node_modules", "src"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
