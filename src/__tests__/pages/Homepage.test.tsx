@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react";
 import { useRouter } from "next/router";
 import React from "react";
-import HomePage from "../index";
+import HomePage from "../../pages/products/index";
 
-jest.mock("../../../components/organisms/ProductList/ProductList", () => () => (
+jest.mock("../../components/organisms/ProductList/ProductList", () => () => (
   <div>ProductList Mock</div>
 ));
 

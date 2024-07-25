@@ -1,17 +1,17 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/router";
-import api from "../../../utils/api";
+import api from "../../utils/api";
 import MockAdapter from "axios-mock-adapter";
-import ProductPage from "../[id]";
-import { Product } from "../../../types";
-import { useCart } from "../../../context/CartContext";
+import ProductPage from "../../pages/products/[id]";
+import { Product } from "../../types";
+import { useCart } from "../../context/CartContext";
 
 jest.mock("next/router", () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock("../../../context/CartContext", () => ({
+jest.mock("../../context/CartContext", () => ({
   useCart: jest.fn(),
 }));
 
